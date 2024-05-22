@@ -40,6 +40,14 @@ end
 -- Main
 ----------------------------------------------------------------------
 
+RegisterServerEvent("ES-CayoAirdrop:server:SendAlert", function()
+    TriggerClientEvent('chat:addMessage', -1, {
+        color = { 255, 0, 0},
+        multiline = true,
+        args = {"Announcement", "Someone Is Looting The Care Package!!!"}
+    })
+end)
+
 RegisterServerEvent("ES-CayoAirdrop:server:Reward", function(ID)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
