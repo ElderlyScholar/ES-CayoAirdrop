@@ -29,11 +29,7 @@ Citizen.CreateThread(function()
                     SetParticleFxNonLoopedColour(1.0, 0.0, 0.0)
                     StartParticleFxLoopedOnEntity('weap_heist_flare_trail', entity, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0)
 
-                    TriggerEvent('chat:addMessage', {
-                        color = { 255, 0, 0},
-                        multiline = true,
-                        args = {"Announcement", "Someone Is Looting The Care Package!!!"}
-                    })
+                    TriggerServerEvent("ES-CayoAirdrop:server:SendAlert")
 
                     QBCore.Functions.Progressbar('cayo_looting', 'Unpacking Care Package', time, false, true, {
                         disableMovement = true,
