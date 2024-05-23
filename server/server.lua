@@ -3,6 +3,7 @@ local DebugLocation = nil
 local netID = nil
 local spawned = false
 local respawnTime = (Config.RespawnTime * 60 * 1000)
+local isLooting = false
 
 ----------------------------------------------------------------------
 -- Functions
@@ -48,6 +49,10 @@ RegisterServerEvent("ES-CayoAirdrop:server:SendAlert", function()
     })
 end)
 
+RegisterServerEvent("ES-CayoAirdrop:server:SetLooting", function(bool)
+    isLooting = bool
+end)
+
 RegisterServerEvent("ES-CayoAirdrop:server:Reward", function(ID)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
@@ -65,6 +70,7 @@ RegisterServerEvent("ES-CayoAirdrop:server:Reward", function(ID)
         spawned = false
         respawnTime = (Config.RespawnTime * 60 * 1000)
         netID = nil
+        isLooting = false
     else
         print("Possible Wizzard!, Attempted To Trigger The Event!")
     end
@@ -72,6 +78,10 @@ end)
 
 QBCore.Functions.CreateCallback('ES-CayoAirdrop:callback:GetNetID', function(source, cb)
     cb(netID)
+end)
+
+QBCore.Functions.CreateCallback('ES-CayoAirdrop:callback:isBeingLooted', function(source, cb)
+    cb(isLooting)
 end)
 
 ----------------------------------------------------------------------
