@@ -1,6 +1,33 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 local netID = nil
 local debugBlip = nil
+local dict = "mini@repair"
+local animation = "fixing_a_ped"
+
+local function TakeCrate(time)
+    local Ped = PlayerPedId()
+
+    TriggerServerEvent("ES-CayoAirdrop:server:SendAlert")
+    TriggerServerEvent("ES-CayoAirdrop:server:SetLooting", true)
+
+    QBCore.Functions.Progressbar('cayo_looting', 'Unpacking Care Package', time, false, true, {
+        disableMovement = true,
+        disableCarMovement = true,
+        disableMouse = false,
+        disableCombat = true
+        }, {
+            animDict = dict,
+            anim = animation,
+            flags = 0,
+            task = nil,
+        }, {}, {}, function()
+            ClearPedTasks(Ped)
+            TriggerServerEvent("ES-CayoAirdrop:server:Reward", netID)
+        end, function()
+            ClearPedTasks(Ped)
+            TriggerServerEvent("ES-CayoAirdrop:server:SetLooting", false)
+    end)
+end
 
 Citizen.CreateThread(function()
     exports['qb-target']:AddTargetModel("xm_prop_crates_sam_01a", {
@@ -11,8 +38,6 @@ Citizen.CreateThread(function()
                 label = "Open Package",
                 action = function(entity)
                     local Ped = PlayerPedId()
-                    local dict = "mini@repair"
-                    local animation = "fixing_a_ped"
                     
                     local netID = NetworkGetNetworkIdFromEntity(entity)
 
@@ -29,24 +54,11 @@ Citizen.CreateThread(function()
                     SetParticleFxNonLoopedColour(1.0, 0.0, 0.0)
                     StartParticleFxLoopedOnEntity('weap_heist_flare_trail', entity, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0)
 
-                    TriggerServerEvent("ES-CayoAirdrop:server:SendAlert")
-
-                    QBCore.Functions.Progressbar('cayo_looting', 'Unpacking Care Package', time, false, true, {
-                        disableMovement = true,
-                        disableCarMovement = true,
-                        disableMouse = false,
-                        disableCombat = true
-                        }, {
-                            animDict = dict,
-                            anim = animation,
-                            flags = 0,
-                            task = nil,
-                        }, {}, {}, function()
-                            ClearPedTasks(Ped)
-                            TriggerServerEvent("ES-CayoAirdrop:server:Reward", netID)
-                        end, function()
-                            ClearPedTasks(Ped)
-                    end)
+                    QBCore.Functions.TriggerCallback('ES-CayoAirdrop:callback:isBeingLooted', function(result)
+                        if result == false then
+                            TakeCrate(time)
+                        end
+                    end, false)
                 end,
                 canInteract = function(entity, distance, data)
                     local id = NetworkGetNetworkIdFromEntity(entity)
